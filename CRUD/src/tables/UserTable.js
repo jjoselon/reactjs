@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button, Icon } from 'semantic-ui-react'
 
 const UserTable = props => (
   <table>
@@ -17,20 +18,19 @@ const UserTable = props => (
             <td>{user.dob}</td>
             <td>{user.address}</td>
             <td>
-              <button
-                onClick={() => {
+            <Button icon onClick={() => {
+                  props.showFormNewUser(true)
                   props.editRow(user)
                 }}
-                className="button muted-button"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => props.deleteUser(user.id)}
-                className="button muted-button"
-              >
-                Delete
-              </button>
+                className="button muted-button">
+              <Icon name='edit' />
+            </Button>
+            <Button icon onClick={() => {
+                  props.deleteUser(user.id)
+                }}
+                className="button muted-button">
+              <Icon name='delete' />
+            </Button>
             </td>
           </tr>
         ))

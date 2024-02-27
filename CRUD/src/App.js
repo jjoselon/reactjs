@@ -2,6 +2,7 @@ import React, { useState, Fragment, useEffect } from 'react'
 import AddUserForm from './forms/AddUserForm'
 import EditUserForm from './forms/EditUserForm'
 import UserTable from './tables/UserTable'
+import { Button, Icon } from 'semantic-ui-react'
 
 function App1() {
 
@@ -11,6 +12,7 @@ function App1() {
 	const [ users, setUsers ] = useState([])
 	const [ currentUser, setCurrentUser ] = useState(initialFormState)
 	const [ editing, setEditing ] = useState(false)
+	const [ formUserIsDisplayed, setFormUserIsDisplayed] = useState(false);
   
 	// Fetch users on component mount
 	useEffect(() => {
@@ -20,7 +22,7 @@ function App1() {
 	// Fetch users from API
 	const fetchUsers = async () => {
 		try {
-			const response = await fetch('https://d3cg5lrgm0j0jl.cloudfront.net/clients');
+			const response = await fetch('https://jxvljujsf1.execute-api.us-east-2.amazonaws.com/default/clients');
 			const data = await response.json();
 			setUsers(data.Items);
 
@@ -31,7 +33,7 @@ function App1() {
 
 	const addUser = async (userData) => {
 		try {
-		  const response = await fetch('https://d3cg5lrgm0j0jl.cloudfront.net/clients', {
+		  const response = await fetch('https://jxvljujsf1.execute-api.us-east-2.amazonaws.com/default/clients', {
 			method: 'POST',
 			headers: {
 			  'Content-Type': 'application/json',
@@ -39,6 +41,7 @@ function App1() {
 			body: JSON.stringify(userData),
 		  });
 		  const data = await response.json();
+		  //console.log(data, users, userData)
 		  setUsers([...users, data]);
 		} catch (error) {
 		  console.error('Error adding user:', error);
@@ -89,32 +92,41 @@ function App1() {
 		setCurrentUser({ id: user.id, name: user.name, dob: user.dob, address: user.address })
 	}
 
+	const showFormNewUser = (p) => {
+		setFormUserIsDisplayed(p);
+	}
+
 	return (
 		<div className="container">
 			<h1>CRUD App with React <a href='https://github.com/taniarascia/react-hooks'>repo</a></h1>
-			
+			{ !formUserIsDisplayed && 
+				<Button compact basic content='Crear nuevo usuario' onClick={() => { showFormNewUser(true) }}></Button> 
+			}
 			<div className="flex-row">
+				{ formUserIsDisplayed &&
+					<div className="flex-large">
+						{editing ? (
+							<Fragment>
+								<h2>Edit user</h2>
+								<EditUserForm
+									editing={editing}
+									setEditing={setEditing}
+									currentUser={currentUser}
+									updateUser={updateUser}
+									showFormNewUser={showFormNewUser}
+								/>
+							</Fragment>
+						) : (
+							<Fragment>
+								<h2>Add user</h2>
+								<AddUserForm addUser={addUser} showFormNewUser={showFormNewUser}/>
+							</Fragment>
+						)}
+					</div>
+				}
 				<div className="flex-large">
-					{editing ? (
-						<Fragment>
-							<h2>Edit user</h2>
-							<EditUserForm
-								editing={editing}
-								setEditing={setEditing}
-								currentUser={currentUser}
-								updateUser={updateUser}
-							/>
-						</Fragment>
-					) : (
-						<Fragment>
-							<h2>Add user</h2>
-							<AddUserForm addUser={addUser} />
-						</Fragment>
-					)}
-				</div>
-				<div className="flex-large">
-					<h2>View users</h2>
-					<UserTable users={users} editRow={editRow} deleteUser={deleteUser} />
+					<h2>List users</h2>
+					<UserTable users={users} editRow={editRow} deleteUser={deleteUser} showFormNewUser={showFormNewUser}/>
 				</div>
 			</div>
 		</div>

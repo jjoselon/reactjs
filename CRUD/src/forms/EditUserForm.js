@@ -21,7 +21,8 @@ const EditUserForm = props => {
     <form
       onSubmit={event => {
         event.preventDefault()
-
+        
+        props.showFormNewUser(false)
         props.updateUser(user)
       }}
     >
@@ -34,7 +35,10 @@ const EditUserForm = props => {
 			<label>Address</label>
 			<input type="text" name="address" value={user.address} onChange={handleInputChange} />
       <button>Update user</button>
-      <button onClick={() => props.setEditing(false)} className="button muted-button">
+      <button onClick={() => {
+        props.showFormNewUser(false)
+        props.setEditing(false)
+      }} className="button muted-button">
         Cancel
       </button>
     </form>
